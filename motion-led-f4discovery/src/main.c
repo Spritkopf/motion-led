@@ -5,9 +5,19 @@
  *      Author: rbck
  */
 
+#include "pwm.h"
+
 
 int main(void)
 {
+
+	HAL_Init();
+
+	PWM_Init();
+
+	PWM_Start();
+
+
 
 	while(1)
 	{
