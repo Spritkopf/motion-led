@@ -1,0 +1,632 @@
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"pwm.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.pwm_init,"ax",%progbits
+  16              		.align	1
+  17              		.global	pwm_init
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	pwm_init:
+  24              	.LFB64:
+  25              		.file 1 "Src/pwm.c"
+   1:Src/pwm.c     **** /*
+   2:Src/pwm.c     ****  * pwm.c
+   3:Src/pwm.c     ****  *
+   4:Src/pwm.c     ****  *  Created on: 04.12.2016
+   5:Src/pwm.c     ****  *      Author: Spritkopf
+   6:Src/pwm.c     ****  */
+   7:Src/pwm.c     **** 
+   8:Src/pwm.c     **** #include "stm32l1xx_hal.h"
+   9:Src/pwm.c     **** 
+  10:Src/pwm.c     **** #include "pwm.h"
+  11:Src/pwm.c     **** 
+  12:Src/pwm.c     **** #define PWM_PIN_CH1 		GPIO_PIN_4
+  13:Src/pwm.c     **** #define PWM_PIN_CH2 		GPIO_PIN_5
+  14:Src/pwm.c     **** #define PWM_PIN_CH3 		GPIO_PIN_0
+  15:Src/pwm.c     **** #define PWM_GPIO_Port 		GPIOB
+  16:Src/pwm.c     **** 
+  17:Src/pwm.c     **** #define  PERIOD_VALUE       (uint32_t)(30000-1)  /* Period Value (1us * 30000 = 30ms)  */
+  18:Src/pwm.c     **** 
+  19:Src/pwm.c     **** /* Timer handler declaration */
+  20:Src/pwm.c     **** TIM_HandleTypeDef htim;
+  21:Src/pwm.c     **** 
+  22:Src/pwm.c     **** 
+  23:Src/pwm.c     **** int8_t pwm_init(void)
+  24:Src/pwm.c     **** {
+  26              		.loc 1 24 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 64
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30 0000 30B5     		push	{r4, r5, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 12
+  33              		.cfi_offset 4, -12
+  34              		.cfi_offset 5, -8
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 2
+
+
+  35              		.cfi_offset 14, -4
+  36 0002 91B0     		sub	sp, sp, #68
+  37              	.LCFI1:
+  38              		.cfi_def_cfa_offset 80
+  25:Src/pwm.c     **** 	GPIO_InitTypeDef   GPIO_InitStruct;
+  26:Src/pwm.c     **** 	TIM_ClockConfigTypeDef sClockSourceConfig;
+  27:Src/pwm.c     **** 	TIM_OC_InitTypeDef sConfigOC;
+  28:Src/pwm.c     **** 	uint32_t clock_freq;
+  29:Src/pwm.c     **** 	uint32_t uhPrescalerValue;
+  30:Src/pwm.c     **** 
+  31:Src/pwm.c     **** 	clock_freq = HAL_RCC_GetPCLK1Freq();
+  39              		.loc 1 31 0
+  40 0004 FFF7FEFF 		bl	HAL_RCC_GetPCLK1Freq
+  41              	.LVL0:
+  32:Src/pwm.c     **** 	uhPrescalerValue = clock_freq/10000000;	/* 1 tick = 10us */
+  42              		.loc 1 32 0
+  43 0008 354C     		ldr	r4, .L10
+  44 000a A4FB0034 		umull	r3, r4, r4, r0
+  45 000e A40D     		lsrs	r4, r4, #22
+  46              	.LVL1:
+  47              	.LBB2:
+  33:Src/pwm.c     **** 
+  34:Src/pwm.c     **** 	__HAL_RCC_TIM3_CLK_ENABLE();
+  48              		.loc 1 34 0
+  49 0010 344B     		ldr	r3, .L10+4
+  50 0012 5A6A     		ldr	r2, [r3, #36]
+  51 0014 42F00202 		orr	r2, r2, #2
+  52 0018 5A62     		str	r2, [r3, #36]
+  53 001a 5A6A     		ldr	r2, [r3, #36]
+  54 001c 02F00202 		and	r2, r2, #2
+  55 0020 0092     		str	r2, [sp]
+  56 0022 009A     		ldr	r2, [sp]
+  57              	.LBE2:
+  58              	.LBB3:
+  35:Src/pwm.c     **** 	__HAL_RCC_GPIOB_CLK_ENABLE();
+  59              		.loc 1 35 0
+  60 0024 DA69     		ldr	r2, [r3, #28]
+  61 0026 42F00202 		orr	r2, r2, #2
+  62 002a DA61     		str	r2, [r3, #28]
+  63 002c DB69     		ldr	r3, [r3, #28]
+  64 002e 03F00203 		and	r3, r3, #2
+  65 0032 0193     		str	r3, [sp, #4]
+  66 0034 019B     		ldr	r3, [sp, #4]
+  67              	.LBE3:
+  36:Src/pwm.c     **** 
+  37:Src/pwm.c     **** 	GPIO_InitStruct.Pin = PWM_PIN_CH1 | PWM_PIN_CH2 | PWM_PIN_CH3;
+  68              		.loc 1 37 0
+  69 0036 3123     		movs	r3, #49
+  70 0038 0B93     		str	r3, [sp, #44]
+  38:Src/pwm.c     **** 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  71              		.loc 1 38 0
+  72 003a 0223     		movs	r3, #2
+  73 003c 0C93     		str	r3, [sp, #48]
+  39:Src/pwm.c     **** 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+  74              		.loc 1 39 0
+  75 003e 0025     		movs	r5, #0
+  76 0040 0D95     		str	r5, [sp, #52]
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 3
+
+
+  40:Src/pwm.c     **** 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  77              		.loc 1 40 0
+  78 0042 0322     		movs	r2, #3
+  79 0044 0E92     		str	r2, [sp, #56]
+  41:Src/pwm.c     **** 	GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
+  80              		.loc 1 41 0
+  81 0046 0F93     		str	r3, [sp, #60]
+  42:Src/pwm.c     **** 	HAL_GPIO_Init(PWM_GPIO_Port, &GPIO_InitStruct);
+  82              		.loc 1 42 0
+  83 0048 0BA9     		add	r1, sp, #44
+  84 004a 2748     		ldr	r0, .L10+8
+  85              	.LVL2:
+  86 004c FFF7FEFF 		bl	HAL_GPIO_Init
+  87              	.LVL3:
+  43:Src/pwm.c     **** 
+  44:Src/pwm.c     **** 
+  45:Src/pwm.c     **** 	htim.Instance = TIM3;
+  88              		.loc 1 45 0
+  89 0050 2648     		ldr	r0, .L10+12
+  90 0052 274B     		ldr	r3, .L10+16
+  91 0054 0360     		str	r3, [r0]
+  46:Src/pwm.c     **** 	htim.Init.Prescaler = uhPrescalerValue;
+  92              		.loc 1 46 0
+  93 0056 4460     		str	r4, [r0, #4]
+  47:Src/pwm.c     **** 	htim.Init.CounterMode = TIM_COUNTERMODE_UP;
+  94              		.loc 1 47 0
+  95 0058 8560     		str	r5, [r0, #8]
+  48:Src/pwm.c     **** 	htim.Init.Period = PERIOD_VALUE;
+  96              		.loc 1 48 0
+  97 005a 47F22F53 		movw	r3, #29999
+  98 005e C360     		str	r3, [r0, #12]
+  49:Src/pwm.c     **** 	htim.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  99              		.loc 1 49 0
+ 100 0060 0561     		str	r5, [r0, #16]
+  50:Src/pwm.c     **** 	if (HAL_TIM_Base_Init(&htim) != HAL_OK)
+ 101              		.loc 1 50 0
+ 102 0062 FFF7FEFF 		bl	HAL_TIM_Base_Init
+ 103              	.LVL4:
+ 104 0066 48BB     		cbnz	r0, .L3
+  51:Src/pwm.c     **** 	{
+  52:Src/pwm.c     **** 		return (-1);
+  53:Src/pwm.c     **** 	}
+  54:Src/pwm.c     **** 	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+ 105              		.loc 1 54 0
+ 106 0068 10A9     		add	r1, sp, #64
+ 107 006a 4FF48053 		mov	r3, #4096
+ 108 006e 41F8243D 		str	r3, [r1, #-36]!
+  55:Src/pwm.c     **** 	if (HAL_TIM_ConfigClockSource(&htim, &sClockSourceConfig) != HAL_OK)
+ 109              		.loc 1 55 0
+ 110 0072 1E48     		ldr	r0, .L10+12
+ 111 0074 FFF7FEFF 		bl	HAL_TIM_ConfigClockSource
+ 112              	.LVL5:
+ 113 0078 18BB     		cbnz	r0, .L4
+  56:Src/pwm.c     **** 	{
+  57:Src/pwm.c     **** 		return (-1);
+  58:Src/pwm.c     **** 	}
+  59:Src/pwm.c     **** 
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 4
+
+
+  60:Src/pwm.c     **** 	if (HAL_TIM_PWM_Init(&htim) != HAL_OK)
+ 114              		.loc 1 60 0
+ 115 007a 1C48     		ldr	r0, .L10+12
+ 116 007c FFF7FEFF 		bl	HAL_TIM_PWM_Init
+ 117              	.LVL6:
+ 118 0080 10BB     		cbnz	r0, .L5
+  61:Src/pwm.c     **** 	{
+  62:Src/pwm.c     **** 		return (-1);
+  63:Src/pwm.c     **** 	}
+  64:Src/pwm.c     **** 	sConfigOC.OCMode = TIM_OCMODE_PWM2;
+ 119              		.loc 1 64 0
+ 120 0082 7023     		movs	r3, #112
+ 121 0084 0293     		str	r3, [sp, #8]
+  65:Src/pwm.c     **** 	sConfigOC.Pulse = 0;
+ 122              		.loc 1 65 0
+ 123 0086 2A46     		mov	r2, r5
+ 124 0088 0395     		str	r5, [sp, #12]
+  66:Src/pwm.c     **** 	sConfigOC.OCPolarity = TIM_OCPOLARITY_LOW;
+ 125              		.loc 1 66 0
+ 126 008a 0223     		movs	r3, #2
+ 127 008c 0493     		str	r3, [sp, #16]
+  67:Src/pwm.c     **** 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+ 128              		.loc 1 67 0
+ 129 008e 0595     		str	r5, [sp, #20]
+  68:Src/pwm.c     **** 	sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+ 130              		.loc 1 68 0
+ 131 0090 0695     		str	r5, [sp, #24]
+  69:Src/pwm.c     **** 	if ((HAL_TIM_PWM_ConfigChannel(&htim, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) ||
+ 132              		.loc 1 69 0
+ 133 0092 02A9     		add	r1, sp, #8
+ 134 0094 1548     		ldr	r0, .L10+12
+ 135 0096 FFF7FEFF 		bl	HAL_TIM_PWM_ConfigChannel
+ 136              	.LVL7:
+ 137 009a C0B9     		cbnz	r0, .L6
+  70:Src/pwm.c     **** 			(HAL_TIM_PWM_ConfigChannel(&htim, &sConfigOC, TIM_CHANNEL_2) != HAL_OK) ||
+ 138              		.loc 1 70 0 discriminator 1
+ 139 009c 0422     		movs	r2, #4
+ 140 009e 02A9     		add	r1, sp, #8
+ 141 00a0 1248     		ldr	r0, .L10+12
+ 142 00a2 FFF7FEFF 		bl	HAL_TIM_PWM_ConfigChannel
+ 143              	.LVL8:
+  69:Src/pwm.c     **** 	if ((HAL_TIM_PWM_ConfigChannel(&htim, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) ||
+ 144              		.loc 1 69 0 discriminator 1
+ 145 00a6 A8B9     		cbnz	r0, .L7
+  71:Src/pwm.c     **** 			(HAL_TIM_PWM_ConfigChannel(&htim, &sConfigOC, TIM_CHANNEL_3) != HAL_OK))
+ 146              		.loc 1 71 0
+ 147 00a8 0822     		movs	r2, #8
+ 148 00aa 0DEB0201 		add	r1, sp, r2
+ 149 00ae 0F48     		ldr	r0, .L10+12
+ 150 00b0 FFF7FEFF 		bl	HAL_TIM_PWM_ConfigChannel
+ 151              	.LVL9:
+  70:Src/pwm.c     **** 			(HAL_TIM_PWM_ConfigChannel(&htim, &sConfigOC, TIM_CHANNEL_2) != HAL_OK) ||
+ 152              		.loc 1 70 0
+ 153 00b4 88B9     		cbnz	r0, .L8
+  72:Src/pwm.c     **** 	{
+  73:Src/pwm.c     **** 		return (-1);
+  74:Src/pwm.c     **** 	}
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 5
+
+
+  75:Src/pwm.c     **** 	return (0);
+ 154              		.loc 1 75 0
+ 155 00b6 2846     		mov	r0, r5
+ 156              	.L2:
+  76:Src/pwm.c     **** 
+  77:Src/pwm.c     **** }
+ 157              		.loc 1 77 0
+ 158 00b8 11B0     		add	sp, sp, #68
+ 159              	.LCFI2:
+ 160              		.cfi_remember_state
+ 161              		.cfi_def_cfa_offset 12
+ 162              		@ sp needed
+ 163 00ba 30BD     		pop	{r4, r5, pc}
+ 164              	.LVL10:
+ 165              	.L3:
+ 166              	.LCFI3:
+ 167              		.cfi_restore_state
+  52:Src/pwm.c     **** 	}
+ 168              		.loc 1 52 0
+ 169 00bc 4FF0FF30 		mov	r0, #-1
+ 170 00c0 FAE7     		b	.L2
+ 171              	.L4:
+  57:Src/pwm.c     **** 	}
+ 172              		.loc 1 57 0
+ 173 00c2 4FF0FF30 		mov	r0, #-1
+ 174 00c6 F7E7     		b	.L2
+ 175              	.L5:
+  62:Src/pwm.c     **** 	}
+ 176              		.loc 1 62 0
+ 177 00c8 4FF0FF30 		mov	r0, #-1
+ 178 00cc F4E7     		b	.L2
+ 179              	.L6:
+  73:Src/pwm.c     **** 	}
+ 180              		.loc 1 73 0
+ 181 00ce 4FF0FF30 		mov	r0, #-1
+ 182 00d2 F1E7     		b	.L2
+ 183              	.L7:
+ 184 00d4 4FF0FF30 		mov	r0, #-1
+ 185 00d8 EEE7     		b	.L2
+ 186              	.L8:
+ 187 00da 4FF0FF30 		mov	r0, #-1
+ 188 00de EBE7     		b	.L2
+ 189              	.L11:
+ 190              		.align	2
+ 191              	.L10:
+ 192 00e0 6BCA5F6B 		.word	1801439851
+ 193 00e4 00380240 		.word	1073887232
+ 194 00e8 00040240 		.word	1073873920
+ 195 00ec 00000000 		.word	htim
+ 196 00f0 00040040 		.word	1073742848
+ 197              		.cfi_endproc
+ 198              	.LFE64:
+ 200              		.section	.text.pwm_start,"ax",%progbits
+ 201              		.align	1
+ 202              		.global	pwm_start
+ 203              		.syntax unified
+ 204              		.thumb
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 6
+
+
+ 205              		.thumb_func
+ 206              		.fpu softvfp
+ 208              	pwm_start:
+ 209              	.LFB65:
+  78:Src/pwm.c     **** 
+  79:Src/pwm.c     **** int8_t pwm_start(void)
+  80:Src/pwm.c     **** {
+ 210              		.loc 1 80 0
+ 211              		.cfi_startproc
+ 212              		@ args = 0, pretend = 0, frame = 0
+ 213              		@ frame_needed = 0, uses_anonymous_args = 0
+ 214 0000 08B5     		push	{r3, lr}
+ 215              	.LCFI4:
+ 216              		.cfi_def_cfa_offset 8
+ 217              		.cfi_offset 3, -8
+ 218              		.cfi_offset 14, -4
+  81:Src/pwm.c     **** 	if( (HAL_TIM_PWM_Start(&htim, TIM_CHANNEL_1) != HAL_OK) ||
+ 219              		.loc 1 81 0
+ 220 0002 0021     		movs	r1, #0
+ 221 0004 0B48     		ldr	r0, .L18
+ 222 0006 FFF7FEFF 		bl	HAL_TIM_PWM_Start
+ 223              	.LVL11:
+ 224 000a 50B9     		cbnz	r0, .L14
+  82:Src/pwm.c     **** 		(HAL_TIM_PWM_Start(&htim, TIM_CHANNEL_2) != HAL_OK) ||
+ 225              		.loc 1 82 0 discriminator 1
+ 226 000c 0421     		movs	r1, #4
+ 227 000e 0948     		ldr	r0, .L18
+ 228 0010 FFF7FEFF 		bl	HAL_TIM_PWM_Start
+ 229              	.LVL12:
+  81:Src/pwm.c     **** 	if( (HAL_TIM_PWM_Start(&htim, TIM_CHANNEL_1) != HAL_OK) ||
+ 230              		.loc 1 81 0 discriminator 1
+ 231 0014 40B9     		cbnz	r0, .L15
+  83:Src/pwm.c     **** 		(HAL_TIM_PWM_Start(&htim, TIM_CHANNEL_3) != HAL_OK))
+ 232              		.loc 1 83 0
+ 233 0016 0821     		movs	r1, #8
+ 234 0018 0648     		ldr	r0, .L18
+ 235 001a FFF7FEFF 		bl	HAL_TIM_PWM_Start
+ 236              	.LVL13:
+  82:Src/pwm.c     **** 		(HAL_TIM_PWM_Start(&htim, TIM_CHANNEL_2) != HAL_OK) ||
+ 237              		.loc 1 82 0
+ 238 001e 30B9     		cbnz	r0, .L16
+ 239 0020 08BD     		pop	{r3, pc}
+ 240              	.L14:
+  84:Src/pwm.c     **** 	{
+  85:Src/pwm.c     **** 		return (-1);
+ 241              		.loc 1 85 0
+ 242 0022 4FF0FF30 		mov	r0, #-1
+ 243 0026 08BD     		pop	{r3, pc}
+ 244              	.L15:
+ 245 0028 4FF0FF30 		mov	r0, #-1
+ 246 002c 08BD     		pop	{r3, pc}
+ 247              	.L16:
+ 248 002e 4FF0FF30 		mov	r0, #-1
+  86:Src/pwm.c     **** 	}
+  87:Src/pwm.c     **** 	return (0);
+  88:Src/pwm.c     **** }
+ 249              		.loc 1 88 0
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 7
+
+
+ 250 0032 08BD     		pop	{r3, pc}
+ 251              	.L19:
+ 252              		.align	2
+ 253              	.L18:
+ 254 0034 00000000 		.word	htim
+ 255              		.cfi_endproc
+ 256              	.LFE65:
+ 258              		.section	.text.pwm_stop,"ax",%progbits
+ 259              		.align	1
+ 260              		.global	pwm_stop
+ 261              		.syntax unified
+ 262              		.thumb
+ 263              		.thumb_func
+ 264              		.fpu softvfp
+ 266              	pwm_stop:
+ 267              	.LFB66:
+  89:Src/pwm.c     **** 
+  90:Src/pwm.c     **** int8_t pwm_stop(void)
+  91:Src/pwm.c     **** {
+ 268              		.loc 1 91 0
+ 269              		.cfi_startproc
+ 270              		@ args = 0, pretend = 0, frame = 0
+ 271              		@ frame_needed = 0, uses_anonymous_args = 0
+ 272 0000 08B5     		push	{r3, lr}
+ 273              	.LCFI5:
+ 274              		.cfi_def_cfa_offset 8
+ 275              		.cfi_offset 3, -8
+ 276              		.cfi_offset 14, -4
+  92:Src/pwm.c     **** 	if( (HAL_TIM_PWM_Stop(&htim, TIM_CHANNEL_1) != HAL_OK) ||
+ 277              		.loc 1 92 0
+ 278 0002 0021     		movs	r1, #0
+ 279 0004 0B48     		ldr	r0, .L26
+ 280 0006 FFF7FEFF 		bl	HAL_TIM_PWM_Stop
+ 281              	.LVL14:
+ 282 000a 50B9     		cbnz	r0, .L22
+  93:Src/pwm.c     **** 		(HAL_TIM_PWM_Stop(&htim, TIM_CHANNEL_2) != HAL_OK) ||
+ 283              		.loc 1 93 0 discriminator 1
+ 284 000c 0421     		movs	r1, #4
+ 285 000e 0948     		ldr	r0, .L26
+ 286 0010 FFF7FEFF 		bl	HAL_TIM_PWM_Stop
+ 287              	.LVL15:
+  92:Src/pwm.c     **** 	if( (HAL_TIM_PWM_Stop(&htim, TIM_CHANNEL_1) != HAL_OK) ||
+ 288              		.loc 1 92 0 discriminator 1
+ 289 0014 40B9     		cbnz	r0, .L23
+  94:Src/pwm.c     **** 		(HAL_TIM_PWM_Stop(&htim, TIM_CHANNEL_3) != HAL_OK))
+ 290              		.loc 1 94 0
+ 291 0016 0821     		movs	r1, #8
+ 292 0018 0648     		ldr	r0, .L26
+ 293 001a FFF7FEFF 		bl	HAL_TIM_PWM_Stop
+ 294              	.LVL16:
+  93:Src/pwm.c     **** 		(HAL_TIM_PWM_Stop(&htim, TIM_CHANNEL_2) != HAL_OK) ||
+ 295              		.loc 1 93 0
+ 296 001e 30B9     		cbnz	r0, .L24
+ 297 0020 08BD     		pop	{r3, pc}
+ 298              	.L22:
+  95:Src/pwm.c     **** 	{
+  96:Src/pwm.c     **** 		return (-1);
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 8
+
+
+ 299              		.loc 1 96 0
+ 300 0022 4FF0FF30 		mov	r0, #-1
+ 301 0026 08BD     		pop	{r3, pc}
+ 302              	.L23:
+ 303 0028 4FF0FF30 		mov	r0, #-1
+ 304 002c 08BD     		pop	{r3, pc}
+ 305              	.L24:
+ 306 002e 4FF0FF30 		mov	r0, #-1
+  97:Src/pwm.c     **** 	}
+  98:Src/pwm.c     **** 
+  99:Src/pwm.c     **** 	return (0);
+ 100:Src/pwm.c     **** }
+ 307              		.loc 1 100 0
+ 308 0032 08BD     		pop	{r3, pc}
+ 309              	.L27:
+ 310              		.align	2
+ 311              	.L26:
+ 312 0034 00000000 		.word	htim
+ 313              		.cfi_endproc
+ 314              	.LFE66:
+ 316              		.global	__aeabi_fcmpgt
+ 317              		.global	__aeabi_fcmplt
+ 318              		.global	__aeabi_fmul
+ 319              		.global	__aeabi_f2uiz
+ 320              		.section	.text.pwm_set_dutycyle,"ax",%progbits
+ 321              		.align	1
+ 322              		.global	pwm_set_dutycyle
+ 323              		.syntax unified
+ 324              		.thumb
+ 325              		.thumb_func
+ 326              		.fpu softvfp
+ 328              	pwm_set_dutycyle:
+ 329              	.LFB67:
+ 101:Src/pwm.c     **** 
+ 102:Src/pwm.c     **** void pwm_set_dutycyle(uint8_t channel, float duty)
+ 103:Src/pwm.c     **** {
+ 330              		.loc 1 103 0
+ 331              		.cfi_startproc
+ 332              		@ args = 0, pretend = 0, frame = 0
+ 333              		@ frame_needed = 0, uses_anonymous_args = 0
+ 334              	.LVL17:
+ 335 0000 38B5     		push	{r3, r4, r5, lr}
+ 336              	.LCFI6:
+ 337              		.cfi_def_cfa_offset 16
+ 338              		.cfi_offset 3, -16
+ 339              		.cfi_offset 4, -12
+ 340              		.cfi_offset 5, -8
+ 341              		.cfi_offset 14, -4
+ 342 0002 0546     		mov	r5, r0
+ 343 0004 0C46     		mov	r4, r1
+ 104:Src/pwm.c     **** 	if(duty > 1) { duty = 1; }
+ 344              		.loc 1 104 0
+ 345 0006 4FF07E51 		mov	r1, #1065353216
+ 346              	.LVL18:
+ 347 000a 2046     		mov	r0, r4
+ 348              	.LVL19:
+ 349 000c FFF7FEFF 		bl	__aeabi_fcmpgt
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 9
+
+
+ 350              	.LVL20:
+ 351 0010 08B1     		cbz	r0, .L29
+ 352 0012 4FF07E54 		mov	r4, #1065353216
+ 353              	.LVL21:
+ 354              	.L29:
+ 105:Src/pwm.c     **** 	if(duty < 0) { duty = 0; }
+ 355              		.loc 1 105 0
+ 356 0016 0021     		movs	r1, #0
+ 357 0018 2046     		mov	r0, r4
+ 358 001a FFF7FEFF 		bl	__aeabi_fcmplt
+ 359              	.LVL22:
+ 360 001e 30B9     		cbnz	r0, .L38
+ 361              	.LVL23:
+ 362              	.L30:
+ 106:Src/pwm.c     **** 
+ 107:Src/pwm.c     **** 	switch (channel)
+ 363              		.loc 1 107 0
+ 364 0020 022D     		cmp	r5, #2
+ 365 0022 10D0     		beq	.L32
+ 366 0024 032D     		cmp	r5, #3
+ 367 0026 18D0     		beq	.L33
+ 368 0028 012D     		cmp	r5, #1
+ 369 002a 02D0     		beq	.L39
+ 370              	.L28:
+ 371 002c 38BD     		pop	{r3, r4, r5, pc}
+ 372              	.LVL24:
+ 373              	.L38:
+ 105:Src/pwm.c     **** 	if(duty < 0) { duty = 0; }
+ 374              		.loc 1 105 0
+ 375 002e 0024     		movs	r4, #0
+ 376              	.LVL25:
+ 377 0030 F6E7     		b	.L30
+ 378              	.LVL26:
+ 379              	.L39:
+ 108:Src/pwm.c     **** 	{
+ 109:Src/pwm.c     **** 	case 1:
+ 110:Src/pwm.c     **** 		TIM3->CCR1 = (uint16_t)(PERIOD_VALUE * duty);
+ 380              		.loc 1 110 0
+ 381 0032 0F49     		ldr	r1, .L40
+ 382 0034 2046     		mov	r0, r4
+ 383 0036 FFF7FEFF 		bl	__aeabi_fmul
+ 384              	.LVL27:
+ 385 003a FFF7FEFF 		bl	__aeabi_f2uiz
+ 386              	.LVL28:
+ 387 003e 80B2     		uxth	r0, r0
+ 388 0040 0C4B     		ldr	r3, .L40+4
+ 389 0042 5863     		str	r0, [r3, #52]
+ 111:Src/pwm.c     **** 		break;
+ 390              		.loc 1 111 0
+ 391 0044 38BD     		pop	{r3, r4, r5, pc}
+ 392              	.LVL29:
+ 393              	.L32:
+ 112:Src/pwm.c     **** 	case 2:
+ 113:Src/pwm.c     **** 		TIM3->CCR2 = (uint16_t)(PERIOD_VALUE * duty);
+ 394              		.loc 1 113 0
+ 395 0046 0A49     		ldr	r1, .L40
+ 396 0048 2046     		mov	r0, r4
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 10
+
+
+ 397 004a FFF7FEFF 		bl	__aeabi_fmul
+ 398              	.LVL30:
+ 399 004e FFF7FEFF 		bl	__aeabi_f2uiz
+ 400              	.LVL31:
+ 401 0052 80B2     		uxth	r0, r0
+ 402 0054 074B     		ldr	r3, .L40+4
+ 403 0056 9863     		str	r0, [r3, #56]
+ 114:Src/pwm.c     **** 		break;
+ 404              		.loc 1 114 0
+ 405 0058 38BD     		pop	{r3, r4, r5, pc}
+ 406              	.LVL32:
+ 407              	.L33:
+ 115:Src/pwm.c     **** 	case 3:
+ 116:Src/pwm.c     **** 		TIM3->CCR3 = (uint16_t)(PERIOD_VALUE * duty);
+ 408              		.loc 1 116 0
+ 409 005a 0549     		ldr	r1, .L40
+ 410 005c 2046     		mov	r0, r4
+ 411 005e FFF7FEFF 		bl	__aeabi_fmul
+ 412              	.LVL33:
+ 413 0062 FFF7FEFF 		bl	__aeabi_f2uiz
+ 414              	.LVL34:
+ 415 0066 80B2     		uxth	r0, r0
+ 416 0068 024B     		ldr	r3, .L40+4
+ 417 006a D863     		str	r0, [r3, #60]
+ 117:Src/pwm.c     **** 		break;
+ 118:Src/pwm.c     **** 	default:
+ 119:Src/pwm.c     **** 		break;
+ 120:Src/pwm.c     **** 	}
+ 121:Src/pwm.c     **** 
+ 122:Src/pwm.c     **** }
+ 418              		.loc 1 122 0
+ 419 006c DEE7     		b	.L28
+ 420              	.L41:
+ 421 006e 00BF     		.align	2
+ 422              	.L40:
+ 423 0070 005EEA46 		.word	1189764608
+ 424 0074 00040040 		.word	1073742848
+ 425              		.cfi_endproc
+ 426              	.LFE67:
+ 428              		.comm	htim,56,4
+ 429              		.text
+ 430              	.Letext0:
+ 431              		.file 2 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 432              		.file 3 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ 433              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 434              		.file 5 "Drivers/CMSIS/Device/ST/STM32L1xx/Include/system_stm32l1xx.h"
+ 435              		.file 6 "Drivers/CMSIS/Device/ST/STM32L1xx/Include/stm32l151xb.h"
+ 436              		.file 7 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ 437              		.file 8 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 438              		.file 9 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 439              		.file 10 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 440              		.file 11 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_def.h"
+ 441              		.file 12 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_gpio.h"
+ 442              		.file 13 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_dma.h"
+ 443              		.file 14 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_tim.h"
+ 444              		.file 15 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_rcc.h"
+ARM GAS  /tmp/ccBQ5Tbh.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 pwm.c
+     /tmp/ccBQ5Tbh.s:16     .text.pwm_init:0000000000000000 $t
+     /tmp/ccBQ5Tbh.s:23     .text.pwm_init:0000000000000000 pwm_init
+     /tmp/ccBQ5Tbh.s:192    .text.pwm_init:00000000000000e0 $d
+                            *COM*:0000000000000038 htim
+     /tmp/ccBQ5Tbh.s:201    .text.pwm_start:0000000000000000 $t
+     /tmp/ccBQ5Tbh.s:208    .text.pwm_start:0000000000000000 pwm_start
+     /tmp/ccBQ5Tbh.s:254    .text.pwm_start:0000000000000034 $d
+     /tmp/ccBQ5Tbh.s:259    .text.pwm_stop:0000000000000000 $t
+     /tmp/ccBQ5Tbh.s:266    .text.pwm_stop:0000000000000000 pwm_stop
+     /tmp/ccBQ5Tbh.s:312    .text.pwm_stop:0000000000000034 $d
+     /tmp/ccBQ5Tbh.s:321    .text.pwm_set_dutycyle:0000000000000000 $t
+     /tmp/ccBQ5Tbh.s:328    .text.pwm_set_dutycyle:0000000000000000 pwm_set_dutycyle
+     /tmp/ccBQ5Tbh.s:423    .text.pwm_set_dutycyle:0000000000000070 $d
+                     .debug_frame:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+HAL_RCC_GetPCLK1Freq
+HAL_GPIO_Init
+HAL_TIM_Base_Init
+HAL_TIM_ConfigClockSource
+HAL_TIM_PWM_Init
+HAL_TIM_PWM_ConfigChannel
+HAL_TIM_PWM_Start
+HAL_TIM_PWM_Stop
+__aeabi_fcmpgt
+__aeabi_fcmplt
+__aeabi_fmul
+__aeabi_f2uiz

@@ -1,0 +1,382 @@
+ARM GAS  /tmp/cciFAUOA.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"stm32l1xx_hal_tim_ex.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.text.HAL_TIMEx_MasterConfigSynchronization,"ax",%progbits
+  16              		.align	1
+  17              		.global	HAL_TIMEx_MasterConfigSynchronization
+  18              		.syntax unified
+  19              		.thumb
+  20              		.thumb_func
+  21              		.fpu softvfp
+  23              	HAL_TIMEx_MasterConfigSynchronization:
+  24              	.LFB64:
+  25              		.file 1 "Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c"
+   1:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /**
+   2:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   ******************************************************************************
+   3:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @file    stm32l1xx_hal_tim_ex.c
+   4:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @author  MCD Application Team
+   5:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @brief   TIM HAL module driver.
+   6:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *          This file provides firmware functions to manage the following
+   7:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *          functionalities of the Timer extension peripheral:
+   8:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *           + Time Master and Slave synchronization configuration
+   9:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *           + Timer remapping capabilities configuration
+  10:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   @verbatim
+  11:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   ==============================================================================
+  12:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****                       ##### TIMER Extended features #####
+  13:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   ==============================================================================
+  14:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   [..]
+  15:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****     The Timer Extension features include:
+  16:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****     (#) Synchronization circuit to control the timer with external signals and to
+  17:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****         interconnect several timers together.
+  18:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****     (#) Timer remapping capabilities configuration
+  19:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  20:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   @endverbatim
+  21:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   ******************************************************************************
+  22:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @attention
+  23:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+  24:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * <h2><center>&copy; COPYRIGHT(c) 2017 STMicroelectronics</center></h2>
+  25:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+  26:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * Redistribution and use in source and binary forms, with or without modification,
+  27:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * are permitted provided that the following conditions are met:
+  28:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *   1. Redistributions of source code must retain the above copyright notice,
+  29:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *      this list of conditions and the following disclaimer.
+  30:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *   2. Redistributions in binary form must reproduce the above copyright notice,
+  31:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *      this list of conditions and the following disclaimer in the documentation
+  32:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *      and/or other materials provided with the distribution.
+  33:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *   3. Neither the name of STMicroelectronics nor the names of its contributors
+ARM GAS  /tmp/cciFAUOA.s 			page 2
+
+
+  34:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *      may be used to endorse or promote products derived from this software
+  35:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *      without specific prior written permission.
+  36:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+  37:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  38:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  39:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  40:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  41:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  42:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  43:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  44:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  45:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  46:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  47:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+  48:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   ******************************************************************************
+  49:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** */
+  50:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  51:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /* Includes ------------------------------------------------------------------*/
+  52:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** #include "stm32l1xx_hal.h"
+  53:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  54:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /** @addtogroup STM32L1xx_HAL_Driver
+  55:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @{
+  56:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   */
+  57:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  58:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /** @defgroup TIMEx TIMEx
+  59:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @brief TIM Extended HAL module driver
+  60:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @{
+  61:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   */
+  62:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  63:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** #ifdef HAL_TIM_MODULE_ENABLED
+  64:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  65:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /* Private typedef -----------------------------------------------------------*/
+  66:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /* Private define ------------------------------------------------------------*/
+  67:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /* Private macro -------------------------------------------------------------*/
+  68:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /* Private variables ---------------------------------------------------------*/
+  69:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /* Private function prototypes -----------------------------------------------*/
+  70:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /* Private functions ---------------------------------------------------------*/
+  71:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  72:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /* Exported functions ---------------------------------------------------------*/
+  73:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  74:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /** @defgroup TIMEx_Exported_Functions TIMEx Exported Functions
+  75:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @{
+  76:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   */
+  77:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  78:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /** @defgroup TIMEx_Exported_Functions_Group1 Peripheral Control functions
+  79:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****  *  @brief   	Peripheral Control functions
+  80:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****  *
+  81:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** @verbatim
+  82:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   ==============================================================================
+  83:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****                     ##### Peripheral Control functions #####
+  84:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   ==============================================================================
+  85:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   [..]
+  86:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****     This section provides functions allowing to:
+  87:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****     (+)Configure Master synchronization.
+  88:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****     (+) Configure timer remapping capabilities.
+  89:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  90:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** @endverbatim
+ARM GAS  /tmp/cciFAUOA.s 			page 3
+
+
+  91:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @{
+  92:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   */
+  93:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  94:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /**
+  95:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @brief  Configures the TIM in master mode.
+  96:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @param  htim: TIM handle.
+  97:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @param  sMasterConfig: pointer to a TIM_MasterConfigTypeDef structure that
+  98:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *         contains the selected trigger output (TRGO) and the Master/Slave
+  99:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *         mode.
+ 100:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @retval HAL status
+ 101:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   */
+ 102:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** HAL_StatusTypeDef HAL_TIMEx_MasterConfigSynchronization(TIM_HandleTypeDef *htim, TIM_MasterConfigTy
+ 103:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** {
+  26              		.loc 1 103 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31              	.LVL0:
+ 104:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   /* Check the parameters */
+ 105:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   assert_param(IS_TIM_MASTER_INSTANCE(htim->Instance));
+ 106:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   assert_param(IS_TIM_TRGO_SOURCE(sMasterConfig->MasterOutputTrigger));
+ 107:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   assert_param(IS_TIM_MSM_STATE(sMasterConfig->MasterSlaveMode));
+ 108:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 109:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   __HAL_LOCK(htim);
+  32              		.loc 1 109 0
+  33 0000 90F83430 		ldrb	r3, [r0, #52]	@ zero_extendqisi2
+  34 0004 012B     		cmp	r3, #1
+  35 0006 22D0     		beq	.L3
+ 103:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   /* Check the parameters */
+  36              		.loc 1 103 0 discriminator 2
+  37 0008 30B4     		push	{r4, r5}
+  38              	.LCFI0:
+  39              		.cfi_def_cfa_offset 8
+  40              		.cfi_offset 4, -8
+  41              		.cfi_offset 5, -4
+  42              		.loc 1 109 0 discriminator 2
+  43 000a 0122     		movs	r2, #1
+  44 000c 80F83420 		strb	r2, [r0, #52]
+ 110:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 111:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   htim->State = HAL_TIM_STATE_BUSY;
+  45              		.loc 1 111 0 discriminator 2
+  46 0010 0223     		movs	r3, #2
+  47 0012 80F83530 		strb	r3, [r0, #53]
+ 112:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 113:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   /* Reset the MMS Bits */
+ 114:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   htim->Instance->CR2 &= ~TIM_CR2_MMS;
+  48              		.loc 1 114 0 discriminator 2
+  49 0016 0468     		ldr	r4, [r0]
+  50 0018 6368     		ldr	r3, [r4, #4]
+  51 001a 23F07003 		bic	r3, r3, #112
+  52 001e 6360     		str	r3, [r4, #4]
+ 115:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   /* Select the TRGO source */
+ 116:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   htim->Instance->CR2 |=  sMasterConfig->MasterOutputTrigger;
+  53              		.loc 1 116 0 discriminator 2
+  54 0020 0468     		ldr	r4, [r0]
+  55 0022 6368     		ldr	r3, [r4, #4]
+ARM GAS  /tmp/cciFAUOA.s 			page 4
+
+
+  56 0024 0D68     		ldr	r5, [r1]
+  57 0026 2B43     		orrs	r3, r3, r5
+  58 0028 6360     		str	r3, [r4, #4]
+ 117:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 118:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   /* Reset the MSM Bit */
+ 119:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   htim->Instance->SMCR &= ~TIM_SMCR_MSM;
+  59              		.loc 1 119 0 discriminator 2
+  60 002a 0468     		ldr	r4, [r0]
+  61 002c A368     		ldr	r3, [r4, #8]
+  62 002e 23F08003 		bic	r3, r3, #128
+  63 0032 A360     		str	r3, [r4, #8]
+ 120:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   /* Set or Reset the MSM Bit */
+ 121:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   htim->Instance->SMCR |= sMasterConfig->MasterSlaveMode;
+  64              		.loc 1 121 0 discriminator 2
+  65 0034 0468     		ldr	r4, [r0]
+  66 0036 A368     		ldr	r3, [r4, #8]
+  67 0038 4968     		ldr	r1, [r1, #4]
+  68              	.LVL1:
+  69 003a 0B43     		orrs	r3, r3, r1
+  70 003c A360     		str	r3, [r4, #8]
+ 122:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 123:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   htim->State = HAL_TIM_STATE_READY;
+  71              		.loc 1 123 0 discriminator 2
+  72 003e 80F83520 		strb	r2, [r0, #53]
+ 124:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 125:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   __HAL_UNLOCK(htim);
+  73              		.loc 1 125 0 discriminator 2
+  74 0042 0023     		movs	r3, #0
+  75 0044 80F83430 		strb	r3, [r0, #52]
+ 126:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 127:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   return HAL_OK;
+  76              		.loc 1 127 0 discriminator 2
+  77 0048 1846     		mov	r0, r3
+  78              	.LVL2:
+ 128:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** }
+  79              		.loc 1 128 0 discriminator 2
+  80 004a 30BC     		pop	{r4, r5}
+  81              	.LCFI1:
+  82              		.cfi_restore 5
+  83              		.cfi_restore 4
+  84              		.cfi_def_cfa_offset 0
+  85 004c 7047     		bx	lr
+  86              	.LVL3:
+  87              	.L3:
+ 109:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+  88              		.loc 1 109 0
+  89 004e 0220     		movs	r0, #2
+  90              	.LVL4:
+  91 0050 7047     		bx	lr
+  92              		.cfi_endproc
+  93              	.LFE64:
+  95              		.section	.text.HAL_TIMEx_RemapConfig,"ax",%progbits
+  96              		.align	1
+  97              		.global	HAL_TIMEx_RemapConfig
+  98              		.syntax unified
+  99              		.thumb
+ 100              		.thumb_func
+ARM GAS  /tmp/cciFAUOA.s 			page 5
+
+
+ 101              		.fpu softvfp
+ 103              	HAL_TIMEx_RemapConfig:
+ 104              	.LFB65:
+ 129:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 130:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** /**
+ 131:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @brief  Configures the TIM2/TIM3/TIM9/TIM10/TIM11 Remapping input capabilities.
+ 132:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @param  htim: TIM handle.
+ 133:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @param  Remap: specifies the TIM remapping source.
+ 134:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *         This parameter is a combination of the following values depending on TIM instance.
+ 135:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @retval HAL status
+ 136:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+ 137:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM2, the parameter can have the following values:
+ 138:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM2_ITR1_TIM10_OC:      TIM2 ITR1 input is connected to TIM10 OC
+ 139:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM2_ITR1_TIM5_TGO:      TIM2 ITR1 input is connected to TIM5 TGO
+ 140:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+ 141:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM3, the parameter can have the following values:
+ 142:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM3_ITR2_TIM11_OC:      TIM3 ITR2 input is connected to TIM11 OC
+ 143:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM3_ITR2_TIM5_TGO:      TIM3 ITR2 input is connected to TIM5 TGO
+ 144:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+ 145:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM9, the parameter is a combination of 2 fields (field1 | field2):
+ 146:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM9, the field1 can have the following values:
+ 147:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM9_ITR1_TIM3_TGO:      TIM9 ITR1 input is connected to TIM3 TGO
+ 148:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM9_ITR1_TS:            TIM9 ITR1 input is connected to touch sensing I/O
+ 149:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM9, the field2 can have the following values:
+ 150:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM9_GPIO:               TIM9 Channel1 is connected to GPIO
+ 151:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM9_LSE:                TIM9 Channel1 is connected to LSE internal clock
+ 152:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM9_GPIO1:              TIM9 Channel1 is connected to GPIO
+ 153:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM9_GPIO2:              TIM9 Channel1 is connected to GPIO
+ 154:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+ 155:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM10, the parameter is a combination of 3 fields (field1 | field2 | field3):
+ 156:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM10, the field1 can have the following values:
+ 157:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM10_TI1RMP:            TIM10 Channel 1 depends on TI1_RMP
+ 158:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM10_RI:                TIM10 Channel 1 is connected to RI
+ 159:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM10, the field2 can have the following values:
+ 160:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM10_ETR_LSE:           TIM10 ETR input is connected to LSE clock
+ 161:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM10_ETR_TIM9_TGO:      TIM10 ETR input is connected to TIM9 TGO
+ 162:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM10, the field3 can have the following values:
+ 163:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM10_GPIO:              TIM10 Channel1 is connected to GPIO
+ 164:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM10_LSI:               TIM10 Channel1 is connected to LSI internal clock
+ 165:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM10_LSE:               TIM10 Channel1 is connected to LSE internal clock
+ 166:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM10_RTC:               TIM10 Channel1 is connected to RTC wakeup interrup
+ 167:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+ 168:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM11, the parameter is a combination of 3 fields (field1 | field2 | field3):
+ 169:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM11, the field1 can have the following values:
+ 170:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM11_TI1RMP:            TIM11 Channel 1 depends on TI1_RMP
+ 171:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM11_RI:                TIM11 Channel 1 is connected to RI
+ 172:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM11, the field2 can have the following values:
+ 173:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM11_ETR_LSE:           TIM11 ETR input is connected to LSE clock
+ 174:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM11_ETR_TIM9_TGO:      TIM11 ETR input is connected to TIM9 TGO 
+ 175:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   * @note For TIM11, the field3 can have the following values:
+ 176:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM11_GPIO:     TIM11 Channel1 is connected to GPIO           
+ 177:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM11_MSI:      TIM11 Channel1 is connected to MSI internal clock
+ 178:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM11_HSE_RTC:  TIM11 Channel1 is connected to HSE_RTC clock
+ 179:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *            @arg TIM_TIM11_GPIO1:    TIM11 Channel1 is connected to GPIO
+ 180:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   *
+ 181:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   */
+ 182:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** HAL_StatusTypeDef HAL_TIMEx_RemapConfig(TIM_HandleTypeDef *htim, uint32_t Remap)
+ARM GAS  /tmp/cciFAUOA.s 			page 6
+
+
+ 183:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** {
+ 105              		.loc 1 183 0
+ 106              		.cfi_startproc
+ 107              		@ args = 0, pretend = 0, frame = 0
+ 108              		@ frame_needed = 0, uses_anonymous_args = 0
+ 109              		@ link register save eliminated.
+ 110              	.LVL5:
+ 184:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   __HAL_LOCK(htim);
+ 111              		.loc 1 184 0
+ 112 0000 90F83430 		ldrb	r3, [r0, #52]	@ zero_extendqisi2
+ 113 0004 012B     		cmp	r3, #1
+ 114 0006 09D0     		beq	.L10
+ 185:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 186:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   /* Check parameters */
+ 187:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   assert_param(IS_TIM_REMAP_INSTANCE(htim->Instance));
+ 188:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   assert_param(IS_TIM_REMAP(htim->Instance,Remap));
+ 189:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 190:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   /* Set the Timer remapping configuration */
+ 191:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   htim->Instance->OR = Remap;
+ 115              		.loc 1 191 0 discriminator 2
+ 116 0008 0368     		ldr	r3, [r0]
+ 117 000a 1965     		str	r1, [r3, #80]
+ 192:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 193:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   htim->State = HAL_TIM_STATE_READY;
+ 118              		.loc 1 193 0 discriminator 2
+ 119 000c 0123     		movs	r3, #1
+ 120 000e 80F83530 		strb	r3, [r0, #53]
+ 194:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 195:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   __HAL_UNLOCK(htim);
+ 121              		.loc 1 195 0 discriminator 2
+ 122 0012 0023     		movs	r3, #0
+ 123 0014 80F83430 		strb	r3, [r0, #52]
+ 196:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 197:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c ****   return HAL_OK;
+ 124              		.loc 1 197 0 discriminator 2
+ 125 0018 1846     		mov	r0, r3
+ 126              	.LVL6:
+ 127 001a 7047     		bx	lr
+ 128              	.LVL7:
+ 129              	.L10:
+ 184:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** 
+ 130              		.loc 1 184 0
+ 131 001c 0220     		movs	r0, #2
+ 132              	.LVL8:
+ 198:Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c **** }
+ 133              		.loc 1 198 0
+ 134 001e 7047     		bx	lr
+ 135              		.cfi_endproc
+ 136              	.LFE65:
+ 138              		.text
+ 139              	.Letext0:
+ 140              		.file 2 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/machine/_defau
+ 141              		.file 3 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_stdint.h"
+ 142              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 143              		.file 5 "Drivers/CMSIS/Device/ST/STM32L1xx/Include/system_stm32l1xx.h"
+ 144              		.file 6 "Drivers/CMSIS/Device/ST/STM32L1xx/Include/stm32l151xb.h"
+ 145              		.file 7 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/lock.h"
+ARM GAS  /tmp/cciFAUOA.s 			page 7
+
+
+ 146              		.file 8 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/_types.h"
+ 147              		.file 9 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/lib/gcc/arm-none-eabi/6.3.1/include/
+ 148              		.file 10 "/home/ricardo/opt/gcc-arm-none-eabi-6-2017-q1-update/arm-none-eabi/include/sys/reent.h"
+ 149              		.file 11 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_def.h"
+ 150              		.file 12 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_dma.h"
+ 151              		.file 13 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_tim.h"
+ 152              		.file 14 "Drivers/STM32L1xx_HAL_Driver/Inc/stm32l1xx_hal_tim_ex.h"
+ARM GAS  /tmp/cciFAUOA.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 stm32l1xx_hal_tim_ex.c
+     /tmp/cciFAUOA.s:16     .text.HAL_TIMEx_MasterConfigSynchronization:0000000000000000 $t
+     /tmp/cciFAUOA.s:23     .text.HAL_TIMEx_MasterConfigSynchronization:0000000000000000 HAL_TIMEx_MasterConfigSynchronization
+     /tmp/cciFAUOA.s:96     .text.HAL_TIMEx_RemapConfig:0000000000000000 $t
+     /tmp/cciFAUOA.s:103    .text.HAL_TIMEx_RemapConfig:0000000000000000 HAL_TIMEx_RemapConfig
+                     .debug_frame:0000000000000010 $d
+
+NO UNDEFINED SYMBOLS
