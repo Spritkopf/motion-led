@@ -3,10 +3,12 @@
 Source code for the motion controlled led night light
 
 
-### motion-led-f4discovery
+### code
 
-Test firmware for the STM32F4-Discovery Board to test everything on a breadboard before designing a custom pcb
+Firmware. This is a generic Makefile project. Building was tested using the GNU Arm Embedded toolchain.
+Build with:
 
-### motion-led
+```make BINPATH=<path/to/gnu/arm/embedded/toolchain/bin>
 
-tbd
+Also there are eclipse project files for use in eclipse with the Gnu Mcu Eclipse plugin
+
