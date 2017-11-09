@@ -8,7 +8,9 @@ Source code for the motion controlled led night light
 Firmware. This is a generic Makefile project. Building was tested using the GNU Arm Embedded toolchain.
 Build with:
 
-```make BINPATH=<path/to/gnu/arm/embedded/toolchain/bin>
+```bash
+make BINPATH=<path/to/gnu/arm/embedded/toolchain/bin>
+```
 
 Also there are eclipse project files for use in eclipse with the Gnu Mcu Eclipse plugin
 
