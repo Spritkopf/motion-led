@@ -14,12 +14,15 @@ TODO: add license
 
 /* Private variables ---------------------------------------------------------*/
 
-int8_t test = 0;
+int8_t encoder_rotation = 0;  /* flag for encoder rotation (1=cw ; -1=ccw ; 0=nothing) */
+
+uint8_t encoder_button_pressed = 0;  /* flag for encoder button press */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 
 void rotation_cb(uint8_t direction);
+void button_cb(void);
 
 int main(void) {
 
@@ -41,25 +44,34 @@ int main(void) {
 
 	encoder_init();
 	encoder_set_rotation_callback(rotation_cb);
+	encoder_set_button_callback(button_cb);
 	encoder_start();
 	/* Infinite loop */
 	while (1) {
 
-		if(test==1)
+		if(encoder_rotation==1)
 		{
-			test = 0;
+			encoder_rotation = 0;
 			/* test pattern, cycle colors for visualisation */
 			pwm_set_dutycyle(PWM_CH_R, 0.3);
 			HAL_Delay(100);
 			pwm_set_dutycyle(PWM_CH_R, 0.0);
 
 		}
-		else if (test==-1)
+		else if (encoder_rotation==-1)
 		{
-			test = 0;
+			encoder_rotation = 0;
 			pwm_set_dutycyle(PWM_CH_B, 0.3);
 			HAL_Delay(100);
 			pwm_set_dutycyle(PWM_CH_B, 0.0);
+		}
+
+		if(encoder_button_pressed==1)
+		{
+			encoder_button_pressed = 0;
+			pwm_set_dutycyle(PWM_CH_G, 0.3);
+			HAL_Delay(100);
+			pwm_set_dutycyle(PWM_CH_G, 0.0);
 		}
 
 	}
@@ -138,8 +150,13 @@ void rotation_cb(uint8_t direction)
 {
 	if(direction)
 	{
-		test = 1;
+		encoder_rotation = 1;
 	}else{
-		test = -1;
+		encoder_rotation = -1;
 	}
+}
+
+void button_cb(void)
+{
+	encoder_button_pressed = 1;
 }

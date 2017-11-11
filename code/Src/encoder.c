@@ -14,9 +14,11 @@
 #define CH_B_LOW	HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8)==GPIO_PIN_RESET
 #define THRESHOLD	300
 
-#define ENCODER_PIN_A	GPIO_PIN_6
-#define ENCODER_PIN_B	GPIO_PIN_7
-#define ENCODER_PORT	GPIOB
+#define ENCODER_PIN_A	 GPIO_PIN_6
+#define ENCODER_PIN_B	 GPIO_PIN_7
+#define ENCODER_PORT	 GPIOB
+#define ENCODER_BTN_PIN	 GPIO_PIN_2
+#define ENCODER_BTN_PORT GPIOA
 
 
 /* Timer handler declaration */
@@ -28,6 +30,7 @@ static uint32_t encoder_get_direction();
 /* function pointer for callback functions */
 void (*encoder_rotation_callback)(uint8_t direction);
 void (*encoder_button_callback)(void);
+
 
 void TIM4_IRQHandler(void)
 {
@@ -44,8 +47,8 @@ void TIM4_IRQHandler(void)
 	//delay = 0xfff0;
 	//while(delay--);
 
-
 }
+
 
 
 void encoder_init()
@@ -80,17 +83,16 @@ void encoder_init()
 
 	/* Channel 2 configuration */
 	HAL_GPIO_Init(ENCODER_PORT, &gpio);
-#if 0
-	/* Push Button Initialization */
-	GPIO_InitStruct.Pin = GPIO_PIN_8;
-	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-	GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
-	HAL_GPIO_Init(ENCODER_PORT, &GPIO_InitStruct);
 
-	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 2);
-	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-#endif
+	/* Push Button Initialization */
+	gpio.Pin = ENCODER_BTN_PIN;
+	gpio.Mode = GPIO_MODE_IT_FALLING;
+	gpio.Pull = GPIO_PULLUP;
+	gpio.Speed = GPIO_SPEED_HIGH;
+	HAL_GPIO_Init(ENCODER_BTN_PORT, &gpio);
+
+	HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 2);
+	HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
 	encoder_handle.Instance = TIM4;
 	encoder_handle.Init.Period = 0xFFFF;
@@ -143,3 +145,11 @@ void encoder_set_button_callback(void (*user_callback)(void))
 
 }
 
+/* Interrupt callback for encoder button */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if((GPIO_Pin == ENCODER_BTN_PIN) && (encoder_button_callback != NULL))
+	{
+		encoder_button_callback();
+	}
+}
