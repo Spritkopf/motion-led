@@ -11,12 +11,25 @@ TODO: add license
 #include "gpio.h"
 #include "pwm.h"
 #include "encoder.h"
+#include "motion_sensor.h"
+#include "colorwheel.h"
+#include "settings.h"
 
 /* Private variables ---------------------------------------------------------*/
 
 int8_t encoder_rotation = 0;  /* flag for encoder rotation (1=cw ; -1=ccw ; 0=nothing) */
 
 uint8_t encoder_button_pressed = 0;  /* flag for encoder button press */
+
+uint16_t colorwheel_angle = 0;
+
+uint8_t color_r = 0;
+uint8_t color_g = 0;
+uint8_t color_b = 0;
+
+uint8_t brightness = 0;
+
+uint8_t test = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -34,6 +47,11 @@ int main(void) {
 	/* Configure the system clock */
 	SystemClock_Config();
 
+	settings_init();
+	color_r = config_bank.r;
+	color_g = config_bank.g;
+	color_b = config_bank.b;
+	brightness = config_bank.brightness;
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	MX_ADC_Init();
@@ -46,24 +64,45 @@ int main(void) {
 	encoder_set_rotation_callback(rotation_cb);
 	encoder_set_button_callback(button_cb);
 	encoder_start();
+
+	colorwheel_set_brightness(brightness, &color_r, &color_g, &color_b);
+	pwm_set_dutycyle(PWM_CH_R, (float)color_r /255.0f);
+	pwm_set_dutycyle(PWM_CH_G, (float)color_g /255.0f);
+	pwm_set_dutycyle(PWM_CH_B, (float)color_b /255.0f);
+	brightness = 100;
+
 	/* Infinite loop */
 	while (1) {
 
 		if(encoder_rotation==1)
 		{
 			encoder_rotation = 0;
-			/* test pattern, cycle colors for visualisation */
-			pwm_set_dutycyle(PWM_CH_R, 0.3);
-			HAL_Delay(100);
-			pwm_set_dutycyle(PWM_CH_R, 0.0);
+			if(colorwheel_angle>350)
+			{
+				colorwheel_angle = 0;
+			}
+			colorwheel_angle +=10;
+			colorwheel_get_rgb(colorwheel_angle, &color_r, &color_g, &color_b);
+			colorwheel_set_brightness(brightness, &color_r, &color_g, &color_b);
+			pwm_set_dutycyle(PWM_CH_R, (float)color_r /255.0f);
+			pwm_set_dutycyle(PWM_CH_G, (float)color_g /255.0f);
+			pwm_set_dutycyle(PWM_CH_B, (float)color_b /255.0f);
+
 
 		}
 		else if (encoder_rotation==-1)
 		{
 			encoder_rotation = 0;
-			pwm_set_dutycyle(PWM_CH_B, 0.3);
-			HAL_Delay(100);
-			pwm_set_dutycyle(PWM_CH_B, 0.0);
+			if(colorwheel_angle<10)
+			{
+				colorwheel_angle = 360;
+			}
+			colorwheel_angle -=10;
+			colorwheel_get_rgb(colorwheel_angle, &color_r, &color_g, &color_b);
+			colorwheel_set_brightness(brightness, &color_r, &color_g, &color_b);
+			pwm_set_dutycyle(PWM_CH_R, (float)color_r /255.0f);
+			pwm_set_dutycyle(PWM_CH_G, (float)color_g /255.0f);
+			pwm_set_dutycyle(PWM_CH_B, (float)color_b /255.0f);
 		}
 
 		if(encoder_button_pressed==1)
@@ -74,6 +113,11 @@ int main(void) {
 			pwm_set_dutycyle(PWM_CH_G, 0.0);
 		}
 
+		if(test==1)
+		{
+			test = 0;
+			settings_save();
+		}
 	}
 
 }
@@ -159,4 +203,20 @@ void rotation_cb(uint8_t direction)
 void button_cb(void)
 {
 	encoder_button_pressed = 1;
+}
+
+
+
+/* Interrupt callback for GPIO interrupts */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	if(GPIO_Pin == ENCODER_BTN_PIN)
+	{
+		encoder_button_interrupt_handler();
+	}
+
+	if(GPIO_Pin == MOTION_SENSOR_GPIO_PIN)
+	{
+		motion_sensor_interrupt_handler();
+	}
 }

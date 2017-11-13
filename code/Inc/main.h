@@ -51,19 +51,6 @@
 #define MOTION_Pin GPIO_PIN_1
 #define MOTION_GPIO_Port GPIOA
 #define MOTION_EXTI_IRQn EXTI1_IRQn
-#define ENC_BTN_Pin GPIO_PIN_2
-#define ENC_BTN_GPIO_Port GPIOA
-#define ENC_BTN_EXTI_IRQn EXTI2_IRQn
-#define PWM_Blue_Pin GPIO_PIN_0
-#define PWM_Blue_GPIO_Port GPIOB
-#define PWM_Red_Pin GPIO_PIN_4
-#define PWM_Red_GPIO_Port GPIOB
-#define PWM_Green_Pin GPIO_PIN_5
-#define PWM_Green_GPIO_Port GPIOB
-#define ENC_A_Pin GPIO_PIN_6
-#define ENC_A_GPIO_Port GPIOB
-#define ENC_B_Pin GPIO_PIN_7
-#define ENC_B_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

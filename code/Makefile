@@ -70,7 +70,10 @@ Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_adc_ex.c \
 Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_pwr.c \
 Src/gpio.c \
 Src/pwm.c \
-Src/encoder.c
+Src/encoder.c \
+Src/motion_sensor.c \
+Src/colorwheel.c \
+Src/settings.c
 
 # ASM sources
 ASM_SOURCES =  \

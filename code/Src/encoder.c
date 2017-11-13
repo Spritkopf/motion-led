@@ -145,11 +145,11 @@ void encoder_set_button_callback(void (*user_callback)(void))
 
 }
 
-/* Interrupt callback for encoder button */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void encoder_button_interrupt_handler(void)
 {
-	if((GPIO_Pin == ENCODER_BTN_PIN) && (encoder_button_callback != NULL))
+	if(encoder_button_callback != NULL)
 	{
 		encoder_button_callback();
 	}
 }
+
