@@ -14,6 +14,24 @@ TODO: add license
 #include "motion_sensor.h"
 #include "colorwheel.h"
 #include "settings.h"
+#include "rgb_led.h"
+
+#define COLOR_HOLD_TIME				5000	/* time the light stays on (in ms) */
+#define COLOR_FADE_TIME				3000	/* time the light takes to fade in and out (in ms) */
+#define COLOR_FADE_FREQ				50		/* update rate when fading (in Hz) */
+
+#define COLOR_FADE_STEP_DURATION 	(1000/COLOR_FADE_FREQ)
+#define COLOR_FADE_MAX_STEPS 		(COLOR_FADE_TIME / COLOR_FADE_STEP_DURATION)
+/* type for states of state machine */
+typedef enum
+{
+	STATE_SLEEP 			= 0,
+	STATE_WAKEUP			= 1,
+	STATE_COLOR_FADE_IN		= 2,
+	STATE_COLOR_HOLD		= 3,
+	STATE_COLOR_FADE_OUT	= 4,
+} state_t;
+
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -31,11 +49,23 @@ uint8_t brightness = 0;
 
 uint8_t test = 0;
 
+state_t state = STATE_SLEEP;
+
+uint8_t flag_wakeup = 0;	/* this flag will be set on motion detector interrupt */
+
+uint32_t color_hold_tick_start = 0;
+uint32_t color_fade_tick_start = 0;
+uint32_t color_fade_current_step = 0;
+uint32_t color_target_angle = 0;
+float color_target_brightness = 0.0f;
+
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 
-void rotation_cb(uint8_t direction);
-void button_cb(void);
+void rotation_cb(uint8_t direction);	/* callback for encoder rotation */
+void button_cb(void);					/* callback for button press */
+void motion_cb(void);					/* callback for motion detected */
 
 int main(void) {
 
@@ -48,31 +78,113 @@ int main(void) {
 	SystemClock_Config();
 
 	settings_init();
-	color_r = config_bank.r;
-	color_g = config_bank.g;
-	color_b = config_bank.b;
-	brightness = config_bank.brightness;
+	color_target_angle = config_bank.angle;
+	color_target_brightness = config_bank.brightness;
+	rgb_led_current_color.angle = 0; /* blue for tests */
+	rgb_led_current_color.brightness = 0.0f;
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	MX_ADC_Init();
 
-	/* initilaize pwm for controlling the LED strip */
-	pwm_init();
-	pwm_start();
+	/* init RGB LED strip */
+	rgb_led_init();
 
 	encoder_init();
 	encoder_set_rotation_callback(rotation_cb);
 	encoder_set_button_callback(button_cb);
 	encoder_start();
 
-	colorwheel_set_brightness(brightness, &color_r, &color_g, &color_b);
-	pwm_set_dutycyle(PWM_CH_R, (float)color_r /255.0f);
-	pwm_set_dutycyle(PWM_CH_G, (float)color_g /255.0f);
-	pwm_set_dutycyle(PWM_CH_B, (float)color_b /255.0f);
-	brightness = 100;
+	motion_sensor_init(motion_cb);
 
 	/* Infinite loop */
 	while (1) {
+
+		/* enter state machine */
+
+		switch (state)
+		{
+			case STATE_SLEEP:
+			{
+				/* wait for the flag set by interrupt
+				 * note: while loop is temporary, use __WFI in the future...
+				 */
+				if(flag_wakeup == 1)
+				{
+					flag_wakeup = 0;
+					state = STATE_WAKEUP;
+				}
+
+				break;
+			}
+
+			case STATE_WAKEUP:
+			{
+				/* doesn't do anything for now. will wake device up from powerdown mode when implemented */
+				color_fade_tick_start = HAL_GetTick();
+				color_fade_current_step = 0;
+				state = STATE_COLOR_FADE_IN;
+				break;
+			}
+
+			case STATE_COLOR_FADE_IN:
+			{
+				if((HAL_GetTick() - color_fade_tick_start) >= COLOR_FADE_STEP_DURATION)
+				{
+					rgb_led_current_color.brightness = color_target_brightness * (float)((float)color_fade_current_step/(float)COLOR_FADE_MAX_STEPS);
+					rgb_led_update_color();
+					color_fade_current_step++;
+					color_fade_tick_start = HAL_GetTick();
+				}
+
+				if(color_fade_current_step >= COLOR_FADE_MAX_STEPS)
+				{
+					/* fading finished */
+					rgb_led_current_color.brightness = color_target_brightness;
+					rgb_led_update_color();
+					color_fade_tick_start = 0;
+					color_hold_tick_start = HAL_GetTick();
+					state = STATE_COLOR_HOLD;
+				}
+				break;
+			}
+
+			case STATE_COLOR_HOLD:
+			{
+				if((HAL_GetTick() - color_hold_tick_start) >= COLOR_HOLD_TIME)
+				{
+					color_fade_tick_start = HAL_GetTick();
+					color_fade_current_step = COLOR_FADE_MAX_STEPS;
+					state = STATE_COLOR_FADE_OUT;
+				}
+				break;
+			}
+			case STATE_COLOR_FADE_OUT:
+			{
+				if((HAL_GetTick() - color_fade_tick_start) >= COLOR_FADE_STEP_DURATION)
+				{
+					rgb_led_current_color.brightness = color_target_brightness * (float)((float)color_fade_current_step/(float)COLOR_FADE_MAX_STEPS);
+					rgb_led_update_color();
+					color_fade_current_step--;
+					color_fade_tick_start = HAL_GetTick();
+				}
+
+				if(color_fade_current_step == 0)
+				{
+					/* fading finished */
+					rgb_led_current_color.brightness = 0;
+					rgb_led_update_color();
+					color_fade_tick_start = 0;
+					color_hold_tick_start = 0;
+					state = STATE_SLEEP;
+				}
+				break;
+			}
+			default:
+				state = STATE_SLEEP;
+				break;
+		}
+
+
 
 		if(encoder_rotation==1)
 		{
@@ -108,9 +220,12 @@ int main(void) {
 		if(encoder_button_pressed==1)
 		{
 			encoder_button_pressed = 0;
-			pwm_set_dutycyle(PWM_CH_G, 0.3);
+			rgb_led_current_color.angle = 120;
+			rgb_led_current_color.brightness = 0.5f;
+			rgb_led_update_color();
 			HAL_Delay(100);
-			pwm_set_dutycyle(PWM_CH_G, 0.0);
+			rgb_led_current_color.brightness = 0.0f;
+			rgb_led_update_color();
 		}
 
 		if(test==1)
@@ -205,7 +320,10 @@ void button_cb(void)
 	encoder_button_pressed = 1;
 }
 
-
+void motion_cb(void)
+{
+	flag_wakeup = 1;
+}
 
 /* Interrupt callback for GPIO interrupts */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)

@@ -73,7 +73,8 @@ Src/pwm.c \
 Src/encoder.c \
 Src/motion_sensor.c \
 Src/colorwheel.c \
-Src/settings.c
+Src/settings.c \
+Src/rgb_led.c
 
 # ASM sources
 ASM_SOURCES =  \

@@ -15,10 +15,8 @@
 typedef struct
 {
 	uint16_t eeprom_ident;
-	uint8_t r;			/* R value */
-	uint8_t g;			/* G value */
-	uint8_t b;			/* B value */
-	uint8_t brightness; /* brightness value */
+	uint16_t angle;     /* colorwheel_angle */
+	float brightness; /* brightness value */
 } config_bank_t;
 
 config_bank_t config_bank;
