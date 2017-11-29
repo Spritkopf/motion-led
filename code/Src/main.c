@@ -5,7 +5,6 @@ TODO: add license
   ******************************************************************************
   */
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
 #include "stm32l1xx_hal.h"
 #include "adc.h"
 #include "gpio.h"
@@ -15,6 +14,7 @@ TODO: add license
 #include "colorwheel.h"
 #include "settings.h"
 #include "rgb_led.h"
+#include "light_sensor.h"
 
 #define COLOR_HOLD_TIME				5000	/* time the light stays on (in ms) */
 #define COLOR_FADE_TIME				3000	/* time the light takes to fade in and out (in ms) */
@@ -77,9 +77,9 @@ int main(void) {
 	color_target_brightness = config_bank.brightness;
 	rgb_led_current_color.angle = 0; /* blue for tests */
 	rgb_led_current_color.brightness = 0.0f;
-	/* Initialize all configured peripherals */
+
+	/* Initialize remaining gpio pins for lower power consumption */
 	MX_GPIO_Init();
-	MX_ADC_Init();
 
 	/* init RGB LED strip */
 	rgb_led_init();
@@ -90,6 +90,8 @@ int main(void) {
 	encoder_start();
 
 	motion_sensor_init(motion_cb);
+
+	light_sensor_init();
 
 	/* Infinite loop */
 	while (1) {
@@ -106,7 +108,12 @@ int main(void) {
 				if(flag_wakeup == 1)
 				{
 					flag_wakeup = 0;
-					state = STATE_WAKEUP;
+
+					/* only proceed if it is actually dark outside, otherwise stay in sleep mode */
+					if(light_sensor_check_ambient_light() == 0)
+					{
+						state = STATE_WAKEUP;
+					}
 				}
 
 				break;
@@ -337,10 +344,9 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLDIV = RCC_PLL_DIV4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializlight_sensores the CPU, AHB and APB busses clocks
     */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -351,7 +357,6 @@ void SystemClock_Config(void)
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
   }
 
     /**Configure the Systick interrupt time 
@@ -366,19 +371,6 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-
-/**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
-void _Error_Handler(char * file, int line)
-{
-  /* User can add his own implementation to report the HAL error return state */
-  while(1) 
-  {
-  }
-}
 
 
 

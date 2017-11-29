@@ -46,7 +46,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l1xx_hal.h"
-#include "main.h"
 
 /* USER CODE BEGIN Includes */
 

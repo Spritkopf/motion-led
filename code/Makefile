@@ -50,7 +50,6 @@ BUILD_DIR = build
 C_SOURCES =  \
 Src/main.c \
 Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_flash_ramfunc.c \
-Src/adc.c \
 Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_tim_ex.c \
 Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_flash_ex.c \
 Src/system_stm32l1xx.c \
@@ -70,11 +69,13 @@ Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_adc_ex.c \
 Drivers/STM32L1xx_HAL_Driver/Src/stm32l1xx_hal_pwr.c \
 Src/gpio.c \
 Src/pwm.c \
+Src/adc.c \
 Src/encoder.c \
 Src/motion_sensor.c \
 Src/colorwheel.c \
 Src/settings.c \
-Src/rgb_led.c
+Src/rgb_led.c \
+Src/light_sensor.c
 
 # ASM sources
 ASM_SOURCES =  \
