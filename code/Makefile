@@ -22,7 +22,7 @@ TARGET = motion_led
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og
+OPT = -O0
 
 
 #######################################
@@ -82,25 +82,18 @@ ASM_SOURCES =  \
 startup_stm32l151xb.s
 
 
-######################################
-# firmware library
-######################################
-PERIFLIB_SOURCES = 
-
-
 #######################################
 # binaries
 #######################################
-BINPATH = 
-PREFIX = arm-none-eabi-
-CC = $(BINPATH)/$(PREFIX)gcc
-AS = $(BINPATH)/$(PREFIX)gcc -x assembler-with-cpp
-CP = $(BINPATH)/$(PREFIX)objcopy
-AR = $(BINPATH)/$(PREFIX)ar
-SZ = $(BINPATH)/$(PREFIX)size
+PREFIX = $(if $(BINPATH), $(BINPATH)/)arm-none-eabi-
+CC = $(PREFIX)gcc
+AS = $(PREFIX)gcc -x assembler-with-cpp
+CP = $(PREFIX)objcopy
+AR = $(PREFIX)ar
+SZ = $(PREFIX)size
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
- 
+
 #######################################
 # CFLAGS
 #######################################
