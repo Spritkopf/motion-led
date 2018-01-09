@@ -16,7 +16,7 @@
 #include "rgb_led.h"
 #include "light_sensor.h"
 
-#define COLOR_HOLD_TIME				5000	/* time the light stays on (in ms) */
+#define COLOR_HOLD_TIME				120000	/* time the light stays on (in ms) */
 #define COLOR_FADE_TIME				3000	/* time the light takes to fade in and out (in ms) */
 #define COLOR_FADE_FREQ				50		/* update rate when fading (in Hz) */
 
@@ -54,6 +54,7 @@ float color_target_brightness = 0.0f;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void SystemPower_Config(void);
 
 void rotation_cb(uint8_t direction); /* callback for encoder rotation */
 void button_cb(void); /* callback for button press */
@@ -68,6 +69,8 @@ int main(void) {
 
     /* Configure the system clock */
     SystemClock_Config();
+    SystemPower_Config();
+    HAL_DBGMCU_EnableDBGStopMode();
 
     settings_init();
     color_target_angle = config_bank.angle;
@@ -101,10 +104,14 @@ int main(void) {
             /* wait for the flag set by interrupt
              * note: while loop is temporary, use __WFI in the future...
              */
-
-            HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
-
+        	light_sensor_deinit();
+        	__HAL_RCC_PWR_CLK_ENABLE();
+        	HAL_SuspendTick();
+            //HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
+            HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+            HAL_ResumeTick();
             state = STATE_WAKEUP;
+
 
             break;
         }
@@ -113,6 +120,7 @@ int main(void) {
         {
             /*re-configure system clock since it was disabled in low-power mode */
             SystemClock_Config();
+            light_sensor_init();
 
             /* only proceed if it is actually dark outside, otherwise stay in sleep mode */
             if ((flag_wakeup == 1) && (light_sensor_check_ambient_light() == 0)) {
@@ -362,6 +370,14 @@ void SystemClock_Config(void) {
     /* SysTick_IRQn interrupt configuration */
     HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
+
+
+void SystemPower_Config(void){
+   __HAL_RCC_PWR_CLK_ENABLE();
+   HAL_PWREx_EnableUltraLowPower();
+   HAL_PWR_DisableSleepOnExit();
+}
+
 
 void rotation_cb(uint8_t direction) {
     if (direction) {

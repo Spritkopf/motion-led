@@ -63,6 +63,11 @@ void adc_init(void)
 	HAL_ADC_Start(&hadc);
 }
 
+void adc_deinit(void)
+{
+	HAL_ADC_Stop(&hadc);
+	HAL_ADC_DeInit(&hadc);
+}
 
 uint32_t adc_measure(void)
 {

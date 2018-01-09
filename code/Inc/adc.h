@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 void adc_init(void);
+void adc_deinit(void);
 uint32_t adc_measure(void);
 
 
