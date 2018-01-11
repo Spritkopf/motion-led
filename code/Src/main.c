@@ -17,11 +17,13 @@
 #include "light_sensor.h"
 
 #define COLOR_HOLD_TIME				120000	/* time the light stays on (in ms) */
-#define COLOR_FADE_TIME				3000	/* time the light takes to fade in and out (in ms) */
+#define COLOR_FADEIN_TIME       	3000	/* time the light takes to fade in (in ms) */
+#define COLOR_FADEOUT_TIME			8000	/* time the light takes to fade out (in ms) */
 #define COLOR_FADE_FREQ				50		/* update rate when fading (in Hz) */
 
 #define COLOR_FADE_STEP_DURATION 	(1000/COLOR_FADE_FREQ)
-#define COLOR_FADE_MAX_STEPS 		(COLOR_FADE_TIME / COLOR_FADE_STEP_DURATION)
+#define COLOR_FADEIN_MAX_STEPS 		(COLOR_FADEIN_TIME / COLOR_FADE_STEP_DURATION)
+#define COLOR_FADEOUT_MAX_STEPS 	(COLOR_FADEOUT_TIME / COLOR_FADE_STEP_DURATION)
 
 #define COLOR_SELECT_TIMEOUT				5000   /* timeout in color selection mode (when nothing is done, color resets to last values)*/
 #define COLOR_SELECT_HUE_INCREMENT			5      /* the step size the hue changes when selecting the color by rotating the encoder */
@@ -144,13 +146,13 @@ int main(void) {
             if ((HAL_GetTick() - state_timeout_tick_start) >= COLOR_FADE_STEP_DURATION) {
                 rgb_led_current_color.brightness = color_target_brightness
                         * (float) ((float) color_fade_current_step
-                                / (float) COLOR_FADE_MAX_STEPS);
+                                / (float) COLOR_FADEIN_MAX_STEPS);
                 rgb_led_update_color();
                 color_fade_current_step++;
                 state_timeout_tick_start = HAL_GetTick();
             }
 
-            if (color_fade_current_step >= COLOR_FADE_MAX_STEPS) {
+            if (color_fade_current_step >= COLOR_FADEIN_MAX_STEPS) {
                 /* fading finished */
                 rgb_led_current_color.brightness = color_target_brightness;
                 rgb_led_update_color();
@@ -168,7 +170,7 @@ int main(void) {
             if ((HAL_GetTick() - state_timeout_tick_start) >= COLOR_HOLD_TIME) {
                 /* prepare fade out */
                 state_timeout_tick_start = HAL_GetTick();
-                color_fade_current_step = COLOR_FADE_MAX_STEPS;
+                color_fade_current_step = COLOR_FADEOUT_MAX_STEPS;
                 state = STATE_COLOR_FADE_OUT;
             }
             break;
@@ -178,7 +180,7 @@ int main(void) {
             if ((HAL_GetTick() - state_timeout_tick_start)
                     >= COLOR_FADE_STEP_DURATION) {
                 rgb_led_current_color.brightness = color_target_brightness
-                        * (float) ((float) color_fade_current_step / (float) COLOR_FADE_MAX_STEPS);
+                        * (float) ((float) color_fade_current_step / (float) COLOR_FADEOUT_MAX_STEPS);
                 rgb_led_update_color();
                 color_fade_current_step--;
                 state_timeout_tick_start = HAL_GetTick();
