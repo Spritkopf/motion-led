@@ -36,6 +36,18 @@ void motion_sensor_init(void(*cb)(void))
 
 }
 
+uint8_t motion_sensor_get_state(void)
+{
+    if(HAL_GPIO_ReadPin(MOTION_SENSOR_GPIO_PORT, MOTION_SENSOR_GPIO_PIN) == GPIO_PIN_SET)
+    {
+        return (1);
+    }
+    else
+    {
+        return (0);
+    }
+}
+
 void motion_sensor_interrupt_handler()
 {
 	if(motion_callback != NULL)

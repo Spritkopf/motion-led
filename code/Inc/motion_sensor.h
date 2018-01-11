@@ -12,6 +12,8 @@
 
 void motion_sensor_init(void(*cb)(void));
 
+uint8_t motion_sensor_get_state(void);
+
 void motion_sensor_interrupt_handler();
 
 #endif /* INC_MOTION_SENSOR_H_ */

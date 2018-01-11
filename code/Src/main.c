@@ -53,6 +53,7 @@ uint32_t state_timeout_tick_start = 0;
 uint32_t color_fade_current_step = 0;
 uint32_t color_target_angle = 0;
 float color_target_brightness = 0.0f;
+uint32_t color_hold_time;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -127,10 +128,12 @@ int main(void) {
             /* only proceed if it is actually dark outside, otherwise stay in sleep mode */
             if ((flag_wakeup == 1) && (light_sensor_check_ambient_light() == 0)) {
 
+                flag_wakeup = 0;
                 /* prepare fade in */
                 rgb_led_current_color.angle = color_target_angle;
                 state_timeout_tick_start = HAL_GetTick();
                 color_fade_current_step = 0;
+                color_hold_time = COLOR_HOLD_TIME;
                 state = STATE_COLOR_FADE_IN;
             }
             else {
@@ -167,11 +170,21 @@ int main(void) {
 
         case STATE_COLOR_HOLD:
         {
-            if ((HAL_GetTick() - state_timeout_tick_start) >= COLOR_HOLD_TIME) {
-                /* prepare fade out */
-                state_timeout_tick_start = HAL_GetTick();
-                color_fade_current_step = COLOR_FADEOUT_MAX_STEPS;
-                state = STATE_COLOR_FADE_OUT;
+            if ((HAL_GetTick() - state_timeout_tick_start) >= color_hold_time) {
+                /* holding time is over, check if there was a recent motion (sensor signal is still high) */
+                if(motion_sensor_get_state() == 1)
+                {
+                    /* keep lights on 10 seconds longer */
+                    state_timeout_tick_start -= 10000;
+                }
+                else
+                {
+                    /* prepare fade out */
+                    state_timeout_tick_start = HAL_GetTick();
+                    color_fade_current_step = COLOR_FADEOUT_MAX_STEPS;
+                    flag_wakeup = 0;
+                    state = STATE_COLOR_FADE_OUT;
+                }
             }
             break;
         }
@@ -184,6 +197,16 @@ int main(void) {
                 rgb_led_update_color();
                 color_fade_current_step--;
                 state_timeout_tick_start = HAL_GetTick();
+            }
+
+            /* if a motion occurred during fade-out, turn light back on for 30 more seconds */
+            if(flag_wakeup == 1)
+            {
+                flag_wakeup = 0;
+                rgb_led_current_color.brightness = color_target_brightness;
+                rgb_led_update_color();
+                color_hold_time = 30000;
+                state = STATE_COLOR_HOLD;
             }
 
             if (color_fade_current_step == 0) {
