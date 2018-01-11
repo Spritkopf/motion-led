@@ -256,7 +256,7 @@ int main(void) {
         }
         case STATE_COLOR_SET_BRIGHTNESS:
         {
-            if (flag_encoder_rotation == 1) {
+            if (flag_encoder_rotation == -1) {
                 flag_encoder_rotation = 0;
                 state_timeout_tick_start = HAL_GetTick();
                 if (rgb_led_current_color.brightness >= 1.0f) {
@@ -266,7 +266,7 @@ int main(void) {
                 COLOR_SELECT_BRIGHTNESS_INCREMENT;
                 rgb_led_update_color();
             }
-            if (flag_encoder_rotation == -1) {
+            if (flag_encoder_rotation == 1) {
                 flag_encoder_rotation = 0;
                 state_timeout_tick_start = HAL_GetTick();
                 if (rgb_led_current_color.brightness
