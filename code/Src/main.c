@@ -56,8 +56,9 @@ float color_target_brightness = 0.0f;
 uint32_t color_hold_time;
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-void SystemPower_Config(void);
+static void SystemClock_Config(void);
+static void SystemClockConfig_STOP(void);
+static void SystemPower_Config(void);
 
 void rotation_cb(uint8_t direction); /* callback for encoder rotation */
 void button_cb(void); /* callback for button press */
@@ -73,7 +74,6 @@ int main(void) {
     /* Configure the system clock */
     SystemClock_Config();
     SystemPower_Config();
-    HAL_DBGMCU_EnableDBGStopMode();
 
     settings_init();
     color_target_angle = config_bank.angle;
@@ -104,28 +104,24 @@ int main(void) {
         switch (state) {
         case STATE_SLEEP:
         {
-            /* wait for the flag set by interrupt
-             * note: while loop is temporary, use __WFI in the future...
-             */
-        	light_sensor_deinit();
-        	__HAL_RCC_PWR_CLK_ENABLE();
-        	HAL_SuspendTick();
-            //HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);
-            HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON, PWR_SLEEPENTRY_WFI);
-            HAL_ResumeTick();
-            state = STATE_WAKEUP;
 
+        	light_sensor_deinit();  /* deactivate adc for even lower power consumtion */
+
+        	HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);  /* enter ultra low power mode */
+
+        	SystemClockConfig_STOP();  /* after wakeup, reconfigure system clock */
+
+        	state = STATE_WAKEUP;
 
             break;
         }
 
         case STATE_WAKEUP:
         {
-            /*re-configure system clock since it was disabled in low-power mode */
-            SystemClock_Config();
+            /* re-enable AFC */
             light_sensor_init();
 
-            /* only proceed if it is actually dark outside, otherwise stay in sleep mode */
+            /* only proceed if it is actually dark outside, otherwise go back to sleep */
             if ((flag_wakeup == 1) && (light_sensor_check_ambient_light() == 0)) {
 
                 flag_wakeup = 0;
@@ -400,8 +396,53 @@ void SystemClock_Config(void) {
 void SystemPower_Config(void){
    __HAL_RCC_PWR_CLK_ENABLE();
    HAL_PWREx_EnableUltraLowPower();
-   HAL_PWR_DisableSleepOnExit();
+   HAL_PWREx_EnableFastWakeUp();
+   //HAL_PWR_DisableSleepOnExit();
 }
+
+/**
+  * @brief  Configures system clock after wake-up from STOP: enable HSI, PLL
+  *         and select PLL as system clock source.
+  * @param  None
+  * @retval None
+  */
+static void SystemClockConfig_STOP(void)
+{
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+
+  /* Enable Power Control clock */
+  __HAL_RCC_PWR_CLK_ENABLE();
+
+  /* The voltage scaling allows optimizing the power consumption when the device is
+     clocked below the maximum system frequency, to update the voltage scaling value
+     regarding system frequency refer to product datasheet.  */
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+  /* Poll VOSF bit of in PWR_CSR. Wait until it is reset to 0 */
+  while (__HAL_PWR_GET_FLAG(PWR_FLAG_VOS) != RESET) {};
+
+  /* Get the Oscillators configuration according to the internal RCC registers */
+  HAL_RCC_GetOscConfig(&RCC_OscInitStruct);
+
+  /* After wake-up from STOP reconfigure the system clock: Enable HSI and PLL */
+  RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSEState            = RCC_HSE_OFF;
+  RCC_OscInitStruct.HSIState            = RCC_HSI_ON;
+  RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.HSICalibrationValue = 16;
+  RCC_OscInitStruct.PLL.PLLMUL          = RCC_PLL_MUL3;
+  RCC_OscInitStruct.PLL.PLLDIV          = RCC_PLL_DIV4;
+  HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
+     clocks dividers */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1);
+}
+
 
 
 void rotation_cb(uint8_t direction) {
