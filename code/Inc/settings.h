@@ -17,6 +17,7 @@ typedef struct
 	uint16_t eeprom_ident;
 	uint16_t angle;     /* colorwheel_angle */
 	float brightness; /* brightness value */
+	uint32_t adc_value;  /* light sensor value for the saved led setting */
 } config_bank_t;
 
 config_bank_t config_bank;

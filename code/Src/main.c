@@ -105,11 +105,25 @@ int main(void) {
         case STATE_SLEEP:
         {
 
-        	light_sensor_deinit();  /* deactivate adc for even lower power consumtion */
+        	/* turn off leds */
+        	rgb_led_current_color.brightness = 0.0f;
+        	rgb_led_update_color();
+        	HAL_Delay(50);
+        	rgb_led_update_color();	/* second time since sometimes one or more channels are not turned off correctly */
+        	HAL_Delay(150);
+
+        	light_sensor_deinit();  /* deactivate adc for even lower power consumption */
+
+        	HAL_Delay(50);
 
         	HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);  /* enter ultra low power mode */
 
         	SystemClockConfig_STOP();  /* after wakeup, reconfigure system clock */
+
+        	HAL_Delay(150);
+
+        	/* re-enable ADC */
+        	light_sensor_init();
 
         	state = STATE_WAKEUP;
 
@@ -118,30 +132,41 @@ int main(void) {
 
         case STATE_WAKEUP:
         {
-            /* re-enable AFC */
-            light_sensor_init();
 
-            /* only proceed if it is actually dark outside, otherwise go back to sleep */
-            if ((flag_wakeup == 1) && (light_sensor_check_ambient_light() == 0)) {
+        	if (flag_wakeup == 1)
+        	{
+				flag_wakeup = 0;
 
-                flag_wakeup = 0;
-                /* prepare fade in */
-                rgb_led_current_color.angle = color_target_angle;
-                state_timeout_tick_start = HAL_GetTick();
-                color_fade_current_step = 0;
-                color_hold_time = COLOR_HOLD_TIME;
-                state = STATE_COLOR_FADE_IN;
-            }
-            else {
-                /* go back to sleep */
-                state = STATE_SLEEP;
-            }
+				/* only proceed if it is actually dark outside, otherwise go back to sleep */
+				if (light_sensor_get_value() <= LIGHT_SENSOR_THRESHOLD) {
+
+					/* prepare fade in */
+					rgb_led_current_color.angle = color_target_angle;
+					state_timeout_tick_start = HAL_GetTick();
+					color_fade_current_step = 0;
+					color_hold_time = COLOR_HOLD_TIME;
+					state = STATE_COLOR_FADE_IN;
+				}
+				else {
+					/* go back to sleep */
+					state = STATE_SLEEP;
+				}
+        	}
 
             break;
         }
 
         case STATE_COLOR_FADE_IN:
         {
+        	/* if during fade in the light sensor detects more light than was measured when saving the preset,
+        	 * it is presumed that an external light was turned on. Therefore, turn LEDs off and return to sleep
+        	 */
+        	if(light_sensor_get_value() > config_bank.adc_value +200)
+        	{
+        		state = STATE_SLEEP;
+        		break;
+        	}
+
             if ((HAL_GetTick() - state_timeout_tick_start) >= COLOR_FADE_STEP_DURATION) {
                 rgb_led_current_color.brightness = color_target_brightness
                         * (float) ((float) color_fade_current_step
@@ -166,6 +191,15 @@ int main(void) {
 
         case STATE_COLOR_HOLD:
         {
+        	/* if during hold time the light sensor detects more light than was measured when saving the preset,
+			 * it is presumed that an external light was turned on. Therefore, turn LEDs off and return to sleep
+			 */
+			if(light_sensor_get_value() > (config_bank.adc_value + 200))
+			{
+				state = STATE_SLEEP;
+				break;
+			}
+
             if ((HAL_GetTick() - state_timeout_tick_start) >= color_hold_time) {
                 /* holding time is over, check if there was a recent motion (sensor signal is still high) */
                 if(motion_sensor_get_state() == 1)
@@ -296,6 +330,7 @@ int main(void) {
                 /* save in EEPROM */
                 config_bank.angle = color_target_angle;
                 config_bank.brightness = color_target_brightness;
+                config_bank.adc_value = light_sensor_get_value();
                 settings_save();
 
                 /* blink twice to signal confirmation */

@@ -14,7 +14,7 @@
 
 #define EEPROM_ADDR		FLASH_EEPROM_BASE
 #define EEPROM_MAX_SIZE 0x0800
-#define EEPROM_IDENT	2
+#define EEPROM_IDENT	3
 
 config_bank_t config_bank;
 

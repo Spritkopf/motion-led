@@ -7,7 +7,7 @@
 #include "light_sensor.h"
 #include "adc.h"
 
-#define LIGHT_SENSOR_THRESHOLD		1000  /* this is the ADC value above it is assumed it is bright outside adjust for your specific sensor (trial-and-error)*/
+
 
 void light_sensor_init(void)
 {
@@ -19,16 +19,11 @@ void light_sensor_deinit(void)
 {
 	adc_deinit();
 }
-/* perform a measurement and return result (0: it is dark, 1: it is light) */
-uint8_t light_sensor_check_ambient_light(void)
+
+/* perform a measurement and return the adc value */
+uint32_t light_sensor_get_value(void)
 {
 
-	if(adc_measure() > LIGHT_SENSOR_THRESHOLD)
-	{
-		return (1);
-	}
-	else
-	{
-		return (0);
-	}
+	return (adc_measure());
+
 }
