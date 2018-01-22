@@ -161,7 +161,7 @@ int main(void) {
         	/* if during fade in the light sensor detects more light than was measured when saving the preset,
         	 * it is presumed that an external light was turned on. Therefore, turn LEDs off and return to sleep
         	 */
-        	if(light_sensor_get_value() > config_bank.adc_value +200)
+        	if(light_sensor_get_value() > config_bank.adc_value +250)
         	{
         		state = STATE_SLEEP;
         		break;
@@ -194,7 +194,7 @@ int main(void) {
         	/* if during hold time the light sensor detects more light than was measured when saving the preset,
 			 * it is presumed that an external light was turned on. Therefore, turn LEDs off and return to sleep
 			 */
-			if(light_sensor_get_value() > (config_bank.adc_value + 200))
+			if(light_sensor_get_value() > (config_bank.adc_value + 250))
 			{
 				state = STATE_SLEEP;
 				break;
